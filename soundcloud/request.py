@@ -118,6 +118,10 @@ def make_request(method, url, params):
     if 'allow_redirects' in params:
         del params['allow_redirects']
 
+    if 'headers' in params:
+        kwargs['headers'].update(params['headers'])
+        del params['headers']
+
     params = hashconversions.to_params(params)
     files = namespaced_query_string(extract_files_from_dict(params))
     data = namespaced_query_string(remove_files_from_dict(params))
