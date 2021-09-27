@@ -122,7 +122,9 @@ class Client(object):
         url = self._resolve_resource_name(resource)
 
         if hasattr(self, 'access_token'):
-            kwargs.update(dict(oauth_token=self.access_token))
+            # Updated 2021-09: pass OAuth token as header instead of query param in URL.
+            kwargs['headers'] = kwargs.get('headers') or {}
+            kwargs['headers']['Authorization'] = f'Authorization: OAuth {self.access_token}'
         if hasattr(self, 'client_id'):
             kwargs.update(dict(client_id=self.client_id))
 
