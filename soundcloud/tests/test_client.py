@@ -41,10 +41,10 @@ def test_url_creation():
 
 def test_url_creation_options():
     """Test that resource resolving works with different options."""
-    client = soundcloud.Client(client_id='foo', use_ssl=False)
+    client = soundcloud.Client(client_id='foo')
     client.host = 'soundcloud.dev'
     url = client._resolve_resource_name('apps/132445')
-    eq_('http://soundcloud.dev/apps/132445', url)
+    eq_('https://soundcloud.dev/apps/132445', url)
 
 
 def test_method_dispatching():

@@ -11,16 +11,14 @@ from soundcloud.request import make_request
 class Client(object):
     """A client for interacting with Soundcloud resources."""
 
-    use_ssl = True
     host = 'api.soundcloud.com'
 
     def __init__(self, **kwargs):
         """Create a client instance with the provided options. Options should
         be passed in as kwargs.
         """
-        self.use_ssl = kwargs.get('use_ssl', self.use_ssl)
         self.host = kwargs.get('host', self.host)
-        self.scheme = self.use_ssl and 'https://' or 'http://'
+        self.scheme = 'https://'
         self.options = kwargs
         self._authorize_url = None
 
