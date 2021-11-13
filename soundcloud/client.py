@@ -1,9 +1,6 @@
 import typing as t
 import typing_extensions as te
-try:
-    from urllib import urlencode
-except ImportError:
-    from urllib.parse import urlencode
+from urllib.parse import urlencode
 
 from soundcloud.resource import Resource, ResourceList, wrapped_resource
 from soundcloud.request import make_request
@@ -21,7 +18,7 @@ class TokenResponse(Resource, TokenResponseP):
     pass
 
 
-class Client(object):
+class Client:
     """A client for interacting with Soundcloud resources."""
 
     host = 'api.soundcloud.com'
@@ -60,7 +57,7 @@ class Client(object):
         elif self._options_for_token_refresh_present():
             self._refresh_token_flow()
 
-    def exchange_token(self, code):
+    def exchange_token(self, code: str) -> Resource:
         """Given the value of the code parameter, request an access token."""
         url = '%s%s/oauth2/token' % (self.scheme, self.host)
         options = {
@@ -196,14 +193,14 @@ class Client(object):
     def delete(self, resource: str, **kwargs):
         return self._request('delete', resource, **kwargs)
 
-    def _resolve_resource_name(self, name):
+    def _resolve_resource_name(self, name: str) -> str:
         """Convert a resource name (e.g. tracks) into a URI."""
         if name[:4] == 'http':  # already a url
             return name
         name = name.rstrip('/').lstrip('/')
         return '%s%s/%s' % (self.scheme, self.host, name)
 
-    def _redirect_uri(self):
+    def _redirect_uri(self) -> t.Optional[str]:
         """
         Return the redirect uri. Checks for ``redirect_uri`` or common typo,
         ``redirect_url``
@@ -213,19 +210,19 @@ class Client(object):
             self.options.get('redirect_url', None))
 
     # Helper functions for testing arguments provided to the constructor.
-    def _options_present(self, options, kwargs):
-        return all(map(lambda k: k in kwargs, options))
+    def _options_present(self, options: t.Iterable[str], kwargs: t.Mapping[str, t.Any]) -> bool:
+        return all(k in kwargs for k in options)
 
-    def _options_for_credentials_flow_present(self):
+    def _options_for_credentials_flow_present(self) -> bool:
         required = ('client_id', 'client_secret', 'username', 'password')
         return self._options_present(required, self.options)
 
-    def _options_for_authorization_code_flow_present(self):
+    def _options_for_authorization_code_flow_present(self) -> bool:
         required = ('client_id', 'redirect_uri')
         or_required = ('client_id', 'redirect_url')
         return (self._options_present(required, self.options) or
                 self._options_present(or_required, self.options))
 
-    def _options_for_token_refresh_present(self):
+    def _options_for_token_refresh_present(self) -> bool:
         required = ('client_id', 'client_secret', 'refresh_token')
         return self._options_present(required, self.options)

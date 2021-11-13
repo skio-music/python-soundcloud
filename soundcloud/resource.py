@@ -1,15 +1,11 @@
-try:
-    import json
-except ImportError:
-    import simplejson as json
+from collections import UserList
+import json
+import typing as t
 
-try:
-    from UserList import UserList
-except ImportError:
-    from collections import UserList
+import requests
 
 
-class Resource(object):
+class Resource:
     """Object wrapper for resources.
 
     Provides an object interface to resources returned by the Soundcloud API.
@@ -42,12 +38,12 @@ class Resource(object):
 
 class ResourceList(UserList):
     """Object wrapper for lists of resources."""
-    def __init__(self, resources=[]):
-        data = [Resource(resource) for resource in resources]
+    def __init__(self, resources=None):
+        data = list(map(Resource, resources or ()))
         super(ResourceList, self).__init__(data)
 
 
-def wrapped_resource(response):
+def wrapped_resource(response: requests.Response) -> t.Union[Resource, ResourceList]:
     """Return a response wrapped in the appropriate wrapper type.
 
     Lists will be returned as a ```ResourceList``` instance,

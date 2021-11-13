@@ -3,13 +3,13 @@ from contextlib import contextmanager
 import fudge
 import soundcloud
 
-from nose.tools import raises, assert_raises
+from nose.tools import assert_raises
 from requests.exceptions import HTTPError
 
 from soundcloud.tests.utils import MockResponse
 
 
-class MockRaw(object):
+class MockRaw:
     """Simple mock for the raw response in requests model."""
     def __init__(self):
         self.reason = "foo"

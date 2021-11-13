@@ -1,22 +1,19 @@
-try:
-    from urllib import urlencode
-except ImportError:
-    from urllib.parse import urlencode
+import typing as t
+from urllib.parse import urlencode
 
 import requests
-import six
 
 import soundcloud
 
 from . import hashconversions
 
 
-def is_file_like(f):
+def is_file_like(f: t.Any) -> bool:
     """Check to see if ```f``` has a ```read()``` method."""
     return hasattr(f, 'read') and callable(f.read)
 
 
-def extract_files_from_dict(d):
+def extract_files_from_dict(d: t.Mapping[t.Any, t.Any]) -> t.Dict[t.Any, t.Any]:
     """Return any file objects from the provided dict.
 
     >>> extract_files_from_dict({
@@ -28,7 +25,7 @@ def extract_files_from_dict(d):
     {'track': {'asset_data': <...}}
     """
     files = {}
-    for key, value in six.iteritems(d):
+    for key, value in d.items():
         if isinstance(value, dict):
             files[key] = extract_files_from_dict(value)
         elif is_file_like(value):
@@ -36,7 +33,7 @@ def extract_files_from_dict(d):
     return files
 
 
-def remove_files_from_dict(d):
+def remove_files_from_dict(d: t.Dict[t.Any, t.Any]) -> t.Dict[t.Any, t.Any]:
     """Return the provided dict with any file objects removed.
 
     >>> remove_files_from_dict({
@@ -50,7 +47,7 @@ def remove_files_from_dict(d):
     True
     """
     file_free = {}
-    for key, value in six.iteritems(d):
+    for key, value in d.items():
         if isinstance(value, dict):
             file_free[key] = remove_files_from_dict(value)
         elif not is_file_like(value):
@@ -77,7 +74,7 @@ def namespaced_query_string(d, prefix=""):
     """
     qs = {}
     prefixed = lambda k: prefix and "%s[%s]" % (prefix, k) or k
-    for key, value in six.iteritems(d):
+    for key, value in d.items():
         if isinstance(value, dict):
             qs.update(namespaced_query_string(value, prefix=key))
         else:
@@ -85,14 +82,14 @@ def namespaced_query_string(d, prefix=""):
     return qs
 
 
-def make_request(method, url, params):
+def make_request(method: str, url: str, params: t.Dict[str, t.Any]) -> requests.Response:
     """Make an HTTP request, formatting params as required."""
     empty = []
 
     # TODO
     # del params[key]
     # without list
-    for key, value in six.iteritems(params):
+    for key, value in params.items():
         if value is None:
             empty.append(key)
     for key in empty:

@@ -1,19 +1,13 @@
-import re
 import collections
-try:
-    from urllib import quote_plus
-except ImportError:
-    from urllib.parse import quote_plus
-
-import six
+import typing as t
 
 
-def to_params(hash):
-    normalized = [normalize_param(k, v) for (k, v) in six.iteritems(hash)]
+def to_params(hash: t.Mapping[str, t.Any]) -> t.Dict[str, t.Any]:
+    normalized = [normalize_param(k, v) for (k, v) in hash.items()]
     return dict((k, v) for d in normalized for (k, v) in d.items())
 
 
-def normalize_param(key, value):
+def normalize_param(key: str, value: t.Any) -> t.Dict[str, t.Any]:
     """Convert a set of key, value parameters into a dictionary suitable for
     passing into requests. This will convert lists into the syntax required
     by SoundCloud. Heavily lifted from HTTParty.
@@ -58,7 +52,7 @@ def normalize_param(key, value):
         params.update({key: value})
 
     for (parent, hash) in stack:
-        for (key, value) in six.iteritems(hash):
+        for (key, value) in hash.items():
             if isinstance(value, dict):
                 stack.append([u"{0[parent]}[{0[key]}]".format(dict(parent=parent, key=key)), value])
             else:
