@@ -1,17 +1,35 @@
 from functools import partial
+import typing as t
+import typing_extensions as te
 try:
     from urllib import urlencode
 except ImportError:
     from urllib.parse import urlencode
 
-from soundcloud.resource import wrapped_resource
+from soundcloud.resource import Resource, wrapped_resource
 from soundcloud.request import make_request
+
+
+class TokenResponseP(te.Protocol):
+    access_token: str
+    refresh_token: str
+    expires_in: int    # seconds
+    token_type: str
+    scope: str
+
+
+class TokenResponse(Resource, TokenResponseP):
+    pass
 
 
 class Client(object):
     """A client for interacting with Soundcloud resources."""
 
     host = 'api.soundcloud.com'
+
+    access_token: t.Optional[str]
+    refresh_token: t.Optional[str]
+    token: t.Optional[Resource]
 
     def __init__(self, **kwargs):
         """Create a client instance with the provided options. Options should
@@ -112,6 +130,38 @@ class Client(object):
         self.token = wrapped_resource(
             make_request('post', url, options))
         self.access_token = self.token.access_token
+
+    def client_credentials_flow(self) -> TokenResponse:
+        """
+        Given an app's client id and client secret, obtain an access token.
+
+        "Please be aware there is a rate limiting on amount of token you can request
+        through the Client Credentials Flow: 50 tokens in 12h per app, and 30 tokens
+        in 1h per IP address. In order to not hit the limit we highly recommend
+        reusing one token between instances of your service and implementing
+        the Refresh Token flow to renew tokens."
+
+        https://developers.soundcloud.com/docs/api/guide#client-creds
+
+        :returns: Token:
+                    access_token: str
+                    refresh_token: str
+                    expires_in: int    # seconds
+                    token_type: str
+                    scope: str
+        """
+        url = '%s%s/oauth2/token' % (self.scheme, self.host)
+        options = {
+            'client_id': self.options.get('client_id'),
+            'client_secret': self.options.get('client_secret'),
+            'grant_type': 'client_credentials'
+        }
+        options.update({
+            'verify_ssl': self.options.get('verify_ssl', True),
+            'proxies': self.options.get('proxies', None)
+        })
+        return wrapped_resource(
+            make_request('post', url, options))
 
     def _request(self, method, resource, **kwargs):
         """Given an HTTP method, a resource name and kwargs, construct a

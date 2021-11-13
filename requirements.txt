@@ -3,3 +3,4 @@ fudge==1.1.0
 requests>=1.0.0
 simplejson>=2.0
 six>=1.2.0
+typing-extensions>=3.10.0.2
