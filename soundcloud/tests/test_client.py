@@ -47,15 +47,6 @@ def test_url_creation_options():
     eq_('https://soundcloud.dev/apps/132445', url)
 
 
-def test_method_dispatching():
-    """Test that getattr is doing right by us."""
-    client = soundcloud.Client(client_id='foo')
-    for method in ('get', 'post', 'put', 'delete', 'head'):
-        p = getattr(client, method)
-        eq_((method,), p.args)
-        eq_('_request', p.func.__name__)
-
-
 def test_host_config():
     """We should be able to set the host on the client."""
     client = soundcloud.Client(client_id='foo', host='api.soundcloud.dev')

@@ -1,4 +1,3 @@
-from functools import partial
 import typing as t
 import typing_extensions as te
 try:
@@ -6,7 +5,7 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
-from soundcloud.resource import Resource, wrapped_resource
+from soundcloud.resource import Resource, ResourceList, wrapped_resource
 from soundcloud.request import make_request
 
 
@@ -163,7 +162,7 @@ class Client(object):
         return wrapped_resource(
             make_request('post', url, options))
 
-    def _request(self, method, resource, **kwargs):
+    def _request(self, method, resource, **kwargs) -> t.Union[Resource, ResourceList]:
         """Given an HTTP method, a resource name and kwargs, construct a
         request and return the response.
         """
@@ -182,11 +181,20 @@ class Client(object):
         })
         return wrapped_resource(make_request(method, url, kwargs))
 
-    def __getattr__(self, name, **kwargs):
-        """Translate an HTTP verb into a request method."""
-        if name not in ('get', 'post', 'put', 'head', 'delete'):
-            raise AttributeError
-        return partial(self._request, name, **kwargs)
+    def get(self, resource: str, **kwargs):
+        return self._request('get', resource, **kwargs)
+
+    def post(self, resource: str, **kwargs):
+        return self._request('post', resource, **kwargs)
+
+    def put(self, resource: str, **kwargs):
+        return self._request('put', resource, **kwargs)
+
+    def head(self, resource: str, **kwargs):
+        return self._request('head', resource, **kwargs)
+
+    def delete(self, resource: str, **kwargs):
+        return self._request('delete', resource, **kwargs)
 
     def _resolve_resource_name(self, name):
         """Convert a resource name (e.g. tracks) into a URI."""
