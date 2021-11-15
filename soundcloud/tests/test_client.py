@@ -64,7 +64,6 @@ def test_disabling_ssl_verification(fake_get):
         client._resolve_resource_name('tracks'),
         urlencode({
             'limit': 5,
-            'client_id': 'foo'
         }))
     headers = {
         'User-Agent': soundcloud.USER_AGENT,
@@ -97,7 +96,6 @@ def test_method_dispatching_get_request_readonly(fake_get):
         client._resolve_resource_name('tracks'),
         urlencode({
             'limit': 5,
-            'client_id': 'foo'
         }))
     headers = {
         'User-Agent': soundcloud.USER_AGENT,
@@ -119,7 +117,6 @@ def test_method_dispatching_post_request(fake_post):
     client = soundcloud.Client(client_id='foo')
     expected_url = client._resolve_resource_name('tracks')
     data = {
-        'client_id': 'foo'
     }
     headers = {
         'User-Agent': soundcloud.USER_AGENT
@@ -143,7 +140,6 @@ def test_proxy_servers(fake_request):
     expected_url = "%s?%s" % (
         client._resolve_resource_name('me'),
         urlencode({
-            'client_id': 'foo'
         })
     )
     headers = {
