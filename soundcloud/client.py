@@ -169,8 +169,6 @@ class Client:
             # Updated 2021-09: pass OAuth token as header instead of query param in URL.
             kwargs['headers'] = kwargs.get('headers') or {}
             kwargs['headers']['Authorization'] = f'OAuth {self.access_token}'
-        if hasattr(self, 'client_id'):
-            kwargs.update(dict(client_id=self.client_id))
 
         kwargs.update({
             'verify_ssl': self.options.get('verify_ssl', True),
