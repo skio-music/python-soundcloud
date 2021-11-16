@@ -1,4 +1,5 @@
 recursive-include soundcloud *.py
+prune soundcloud/tests
 include distribute_setup.py
 include LICENSE
 include *.txt

@@ -25,11 +25,11 @@ setup(
         '': ['README.rst']
     },
     install_requires=[
-        'fudge>=1.1.0',
         'requests>=0.14.0',
-        'simplejson>=2.0',
+        'typing-extensions>=3.10.0.2',
     ],
     tests_require=[
+        'fudge>=1.1.0',
         'nose>=1.1.2',
     ],
     classifiers=[
